@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+<title>Minesweeper</title>
+</head>
+
+<body>
+<p id = 'mineCounter'></p>
+<canvas id = 'canvas' width = '600' height = '600'></canvas>
+<p id = 'message'></p>
+</body>
+
+<script src = 'constants.js'></script>
+<script src = 'traverse.js'></script>
+<script src = 'tile.js'></script>
+<script src = 'grid.js'></script>
+
+<script>
+
+var canvas = document.getElementById('canvas');
+var ctx = canvas.getContext('2d');
+
+document.addEventListener('mousedown', onClick);
+
+var grid = new Grid(0, 0, 20, 20);
+grid.draw();
+
+canvas.oncontextmenu = function (e) {
+  e.preventDefault();
+};
+
+function onClick(evt) {
+  var canvasRect = canvas.getBoundingClientRect();
+  
+  var tileX = Math.floor((evt.pageX - canvasRect.left) / TILE_LENGTH);
+  var tileY = Math.floor((evt.pageY - canvasRect.top) / TILE_LENGTH);
+  
+  if(tileX >= 0 && tileX < grid.colCount && tileY >= 0 && tileY < grid.rowCount) {
+    if(evt.button == LEFT) {
+      grid.tiles[tileY][tileX].reveal(grid);
+    } else if(evt.button == RIGHT) {
+      grid.tiles[tileY][tileX].mark(grid);
+    }
+    
+    refreshScreen();
+    
+    document.getElementById('mineCounter').innerHTML = grid.marked;
+    
+    if(grid.tilesRevealed == grid.rowCount * grid.colCount - grid.mineCount &&
+       grid.minesRemaining == 0) {
+      document.getElementById('message').innerHTML = 'You win!';
+    }
+  }
+}
+
+function refreshScreen() {
+  canvas.width = canvas.width;
+  grid.draw();
+}
+
+</script>
+
+</html>
